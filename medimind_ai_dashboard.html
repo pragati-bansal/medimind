@@ -1,1 +1,820 @@
 
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --mint: #1D9E75; --mint-light: #E1F5EE; --mint-mid: #5DCAA5; --mint-dark: #085041;
+    --amber: #EF9F27; --amber-light: #FAEEDA; --amber-dark: #633806;
+    --red: #E24B4A; --red-light: #FCEBEB;
+    --blue: #378ADD; --blue-light: #E6F1FB;
+    --purple: #7F77DD; --purple-light: #EEEDFE;
+    --bg: var(--color-background-primary);
+    --bg2: var(--color-background-secondary);
+    --bg3: var(--color-background-tertiary);
+    --tx1: var(--color-text-primary);
+    --tx2: var(--color-text-secondary);
+    --tx3: var(--color-text-tertiary);
+    --br: var(--color-border-tertiary);
+    --font: 'DM Sans', var(--font-sans);
+    --serif: 'Instrument Serif', var(--font-serif);
+  }
+
+  .app {
+    font-family: var(--font);
+    color: var(--tx1);
+    background: var(--bg3);
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--br);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--tx1);
+    font-style: italic;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--mint);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 18px; height: 18px; }
+  .logo span { color: var(--mint); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--mint-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500; color: var(--mint-dark);
+  }
+  .badge-live {
+    background: var(--red-light);
+    color: var(--red);
+    font-size: 11px; font-weight: 500;
+    padding: 3px 8px; border-radius: 20px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .badge-live::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--bg);
+    border-right: 0.5px solid var(--br);
+    padding: 20px 0;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .nav-section { padding: 0 12px 8px; font-size: 10px; font-weight: 500; color: var(--tx3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 12px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    margin: 0 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--tx2);
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg2); color: var(--tx1); }
+  .nav-item.active { background: var(--mint-light); color: var(--mint-dark); font-weight: 500; }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-dot {
+    margin-left: auto; min-width: 18px; height: 18px;
+    background: var(--red); color: #fff;
+    font-size: 10px; font-weight: 600;
+    border-radius: 20px; display: flex; align-items: center; justify-content: center;
+    padding: 0 5px;
+  }
+
+  /* MAIN */
+  .main { padding: 24px; overflow-y: auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* SECTION HEADER */
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-title { font-size: 20px; font-weight: 500; color: var(--tx1); }
+  .section-sub { font-size: 13px; color: var(--tx2); margin-top: 2px; }
+  .btn {
+    padding: 7px 14px; border-radius: 8px;
+    border: 0.5px solid var(--br);
+    background: var(--bg);
+    font-family: var(--font);
+    font-size: 13px; font-weight: 500; color: var(--tx1);
+    cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { background: var(--bg2); }
+  .btn.primary { background: var(--mint); color: #fff; border-color: var(--mint); }
+  .btn.primary:hover { background: var(--mint-dark); }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--bg);
+    border: 0.5px solid var(--br);
+    border-radius: var(--border-radius-lg);
+    padding: 16px;
+  }
+  .stat-label { font-size: 12px; color: var(--tx2); margin-bottom: 6px; }
+  .stat-value { font-size: 26px; font-weight: 500; line-height: 1; }
+  .stat-trend { font-size: 11px; color: var(--tx3); margin-top: 4px; }
+  .trend-up { color: var(--mint); }
+  .trend-down { color: var(--red); }
+
+  /* GRID 2COL */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg);
+    border: 0.5px solid var(--br);
+    border-radius: var(--border-radius-lg);
+    padding: 18px;
+  }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--tx2); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* MED ITEM */
+  .med-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--br);
+  }
+  .med-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .med-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 18px;
+  }
+  .med-info { flex: 1; min-width: 0; }
+  .med-name { font-size: 14px; font-weight: 500; }
+  .med-sub { font-size: 12px; color: var(--tx2); margin-top: 2px; }
+  .med-times { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+  .time-pill {
+    font-size: 11px; padding: 2px 7px; border-radius: 20px;
+    background: var(--bg2); color: var(--tx2);
+    border: 0.5px solid var(--br);
+  }
+  .time-pill.due { background: var(--amber-light); color: var(--amber-dark); border-color: var(--amber); }
+  .time-pill.done { background: var(--mint-light); color: var(--mint-dark); border-color: var(--mint-mid); text-decoration: line-through; }
+  .med-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .action-btn {
+    width: 30px; height: 30px; border-radius: 8px;
+    border: 0.5px solid var(--br); background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .action-btn:hover { background: var(--mint-light); border-color: var(--mint-mid); }
+  .action-btn svg { width: 14px; height: 14px; color: var(--tx2); }
+
+  /* REMINDER ALERT */
+  .reminder-alert {
+    background: var(--amber-light);
+    border: 1px solid var(--amber);
+    border-radius: var(--border-radius-lg);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .alert-icon { font-size: 22px; }
+  .alert-content { flex: 1; }
+  .alert-title { font-size: 14px; font-weight: 500; color: var(--amber-dark); }
+  .alert-sub { font-size: 12px; color: var(--amber-dark); opacity: 0.75; margin-top: 2px; }
+
+  /* ADHERENCE CHART */
+  .adh-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
+  .adh-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .adh-bar {
+    width: 100%; border-radius: 4px 4px 0 0;
+    transition: height 0.4s ease;
+  }
+  .adh-label { font-size: 10px; color: var(--tx3); }
+  .adh-legend { display: flex; gap: 12px; margin-top: 12px; font-size: 12px; color: var(--tx2); }
+  .adh-legend span { display: flex; align-items: center; gap: 5px; }
+  .adh-dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+  /* RISK METER */
+  .risk-meter { text-align: center; padding: 8px 0; }
+  .risk-arc-wrap { position: relative; display: inline-block; }
+  .risk-value { font-size: 32px; font-weight: 500; }
+  .risk-label-sub { font-size: 12px; color: var(--tx2); margin-top: 4px; }
+  .risk-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .risk-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; padding: 6px 10px;
+    background: var(--bg2); border-radius: 6px;
+  }
+  .risk-row-label { color: var(--tx2); }
+  .risk-row-val { font-weight: 500; }
+
+  /* AI DECISION CARD */
+  .ai-card {
+    background: var(--purple-light);
+    border: 1px solid var(--purple);
+    border-radius: var(--border-radius-lg);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .ai-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .ai-badge { background: var(--purple); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.05em; }
+  .ai-card-title { font-size: 13px; font-weight: 500; color: #3C3489; }
+  .ai-options { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .ai-option {
+    padding: 10px 8px; border-radius: 8px; text-align: center;
+    border: 0.5px solid transparent;
+    cursor: pointer; transition: all 0.15s;
+    font-size: 12px; font-weight: 500;
+  }
+  .ai-option:hover { transform: translateY(-1px); }
+  .ai-option.take { background: var(--mint-light); color: var(--mint-dark); border-color: var(--mint-mid); }
+  .ai-option.delay { background: var(--amber-light); color: var(--amber-dark); border-color: var(--amber); }
+  .ai-option.skip { background: var(--red-light); color: var(--red); border-color: var(--red); }
+  .ai-option-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+
+  /* OCR UPLOAD */
+  .upload-zone {
+    border: 1.5px dashed var(--br);
+    border-radius: var(--border-radius-lg);
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg2);
+  }
+  .upload-zone:hover { border-color: var(--mint); background: var(--mint-light); }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; display: block; }
+  .upload-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .upload-sub { font-size: 12px; color: var(--tx2); }
+
+  /* ADD MED MODAL */
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg);
+    border-radius: var(--border-radius-xl);
+    padding: 24px;
+    width: 380px;
+    border: 0.5px solid var(--br);
+  }
+  .modal-title { font-family: var(--serif); font-size: 20px; font-style: italic; margin-bottom: 18px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--tx2); margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; padding: 8px 10px;
+    border: 0.5px solid var(--br);
+    border-radius: 8px;
+    font-family: var(--font); font-size: 13px;
+    background: var(--bg); color: var(--tx1);
+    outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--mint); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item { display: flex; gap: 12px; padding-bottom: 16px; position: relative; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; }
+  .tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .tl-line { width: 1px; flex: 1; background: var(--br); margin-top: 3px; }
+  .tl-item:last-child .tl-line { display: none; }
+  .tl-content { flex: 1; }
+  .tl-time { font-size: 11px; color: var(--tx3); }
+  .tl-text { font-size: 13px; color: var(--tx1); margin-top: 1px; }
+  .tl-med { font-size: 12px; color: var(--tx2); }
+
+  /* SCHEDULE */
+  .schedule-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 0.5px solid var(--br);
+  }
+  .schedule-row:last-child { border: none; }
+  .sched-time { font-size: 13px; font-weight: 500; width: 48px; color: var(--mint-dark); }
+  .sched-med { flex: 1; }
+  .sched-name { font-size: 13px; font-weight: 500; }
+  .sched-dose { font-size: 11px; color: var(--tx2); }
+  .sched-status {
+    font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px;
+  }
+  .status-done { background: var(--mint-light); color: var(--mint-dark); }
+  .status-due { background: var(--amber-light); color: var(--amber-dark); }
+  .status-upcoming { background: var(--bg2); color: var(--tx3); }
+
+  /* Scrollbar */
+  .main::-webkit-scrollbar { width: 4px; }
+  .main::-webkit-scrollbar-thumb { background: var(--br); border-radius: 4px; }
+</style>
+
+<h2 class="sr-only">MediMind AI — Medication Management Dashboard with reminders, adherence analytics, and AI decision engine</h2>
+
+<div class="app" id="app" style="position:relative; min-height:600px;">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="7" width="14" height="4" rx="2" fill="white"/>
+          <rect x="7" y="2" width="4" height="14" rx="2" fill="white"/>
+        </svg>
+      </div>
+      Medi<span>Mind</span>
+    </div>
+    <div class="topbar-right">
+      <div class="badge-live">2 due now</div>
+      <div class="avatar">AK</div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('medicines',this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="4" rx="2" fill="currentColor"/><rect x="6" y="1" width="4" height="14" rx="2" fill="currentColor"/></svg>
+      Medicines
+      <div class="nav-dot">6</div>
+    </div>
+    <div class="nav-section">Monitoring</div>
+    <div class="nav-item" onclick="showPage('schedule',this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v2M11 1v2M2 6h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Schedule
+    </div>
+    <div class="nav-item" onclick="showPage('adherence',this)">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 12l3.5-4 3 2.5 2.5-3.5L14 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Adherence
+    </div>
+    <div class="nav-section">AI Tools</div>
+    <div class="nav-item" onclick="showPage('ai',this)">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="2.5" fill="currentColor"/></svg>
+      AI Engine
+    </div>
+    <div class="nav-item" onclick="showPage('ocr',this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 5h6M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      OCR Scanner
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-head">
+        <div>
+          <div class="section-title">Good morning, Aryan</div>
+          <div class="section-sub">Saturday, 11 Apr 2026 · 3 medicines due today</div>
+        </div>
+        <button class="btn primary" onclick="openModal()">+ Add Medicine</button>
+      </div>
+
+      <div class="reminder-alert">
+        <div class="alert-icon">⏰</div>
+        <div class="alert-content">
+          <div class="alert-title">Metformin 500mg due now</div>
+          <div class="alert-sub">Scheduled at 8:00 AM with breakfast · 15 minutes overdue</div>
+        </div>
+        <button class="btn" onclick="markTaken('Metformin')">Mark taken</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Adherence Rate</div>
+          <div class="stat-value" style="color:var(--mint)">87%</div>
+          <div class="stat-trend trend-up">+4% this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Streak</div>
+          <div class="stat-value">12</div>
+          <div class="stat-trend">days consistent</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Missed Doses</div>
+          <div class="stat-value" style="color:var(--red)">3</div>
+          <div class="stat-trend trend-down">this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Meds</div>
+          <div class="stat-value">6</div>
+          <div class="stat-trend">2 refills needed</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Today's Schedule</div>
+          <div class="schedule-row">
+            <div class="sched-time">7:00</div>
+            <div class="sched-med"><div class="sched-name">Atorvastatin</div><div class="sched-dose">20mg · with water</div></div>
+            <div class="sched-status status-done">Taken</div>
+          </div>
+          <div class="schedule-row">
+            <div class="sched-time">8:00</div>
+            <div class="sched-med"><div class="sched-name">Metformin</div><div class="sched-dose">500mg · with food</div></div>
+            <div class="sched-status status-due">Overdue</div>
+          </div>
+          <div class="schedule-row">
+            <div class="sched-time">13:00</div>
+            <div class="sched-med"><div class="sched-name">Metformin</div><div class="sched-dose">500mg · with lunch</div></div>
+            <div class="sched-status status-upcoming">Upcoming</div>
+          </div>
+          <div class="schedule-row">
+            <div class="sched-time">21:00</div>
+            <div class="sched-med"><div class="sched-name">Lisinopril</div><div class="sched-dose">10mg · before sleep</div></div>
+            <div class="sched-status status-upcoming">Upcoming</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Weekly Adherence</div>
+          <div class="adh-bars">
+            <div class="adh-bar-wrap"><div class="adh-bar" style="height:70%;background:var(--mint)"></div><div class="adh-label">M</div></div>
+            <div class="adh-bar-wrap"><div class="adh-bar" style="height:100%;background:var(--mint)"></div><div class="adh-label">T</div></div>
+            <div class="adh-bar-wrap"><div class="adh-bar" style="height:60%;background:var(--amber)"></div><div class="adh-label">W</div></div>
+            <div class="adh-bar-wrap"><div class="adh-bar" style="height:100%;background:var(--mint)"></div><div class="adh-label">T</div></div>
+            <div class="adh-bar-wrap"><div class="adh-bar" style="height:80%;background:var(--mint)"></div><div class="adh-label">F</div></div>
+            <div class="adh-bar-wrap"><div class="adh-bar" style="height:40%;background:var(--red)"></div><div class="adh-label">S</div></div>
+            <div class="adh-bar-wrap"><div class="adh-bar" style="height:90%;background:var(--mint)"></div><div class="adh-label">S</div></div>
+          </div>
+          <div class="adh-legend">
+            <span><i class="adh-dot" style="background:var(--mint)"></i> On time</span>
+            <span><i class="adh-dot" style="background:var(--amber)"></i> Delayed</span>
+            <span><i class="adh-dot" style="background:var(--red)"></i> Missed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-card">
+        <div class="ai-card-head">
+          <span class="ai-badge">AI ENGINE</span>
+          <span class="ai-card-title">Metformin 500mg missed — what should you do?</span>
+        </div>
+        <div class="ai-options">
+          <div class="ai-option take" onclick="aiDecision('take')"><span class="ai-option-icon">✅</span>Take now<br><span style="font-weight:400;font-size:11px">15 min late, safe</span></div>
+          <div class="ai-option delay" onclick="aiDecision('delay')"><span class="ai-option-icon">⏳</span>Delay<br><span style="font-weight:400;font-size:11px">Next meal dose</span></div>
+          <div class="ai-option skip" onclick="aiDecision('skip')"><span class="ai-option-icon">⏭</span>Skip safely<br><span style="font-weight:400;font-size:11px">Double not advised</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDICINES PAGE -->
+    <div class="page" id="page-medicines">
+      <div class="section-head">
+        <div><div class="section-title">My Medicines</div><div class="section-sub">6 active prescriptions</div></div>
+        <button class="btn primary" onclick="openModal()">+ Add Medicine</button>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="med-item">
+          <div class="med-icon" style="background:#E1F5EE;font-size:20px">💊</div>
+          <div class="med-info">
+            <div class="med-name">Metformin HCl</div>
+            <div class="med-sub">500mg · Twice daily · Type 2 Diabetes</div>
+            <div class="med-times"><span class="time-pill due">8:00 AM !</span><span class="time-pill">1:00 PM</span></div>
+          </div>
+          <div class="med-actions">
+            <div class="action-btn"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M7 2v10"/></svg></div>
+          </div>
+        </div>
+        <div class="med-item">
+          <div class="med-icon" style="background:#E6F1FB;font-size:20px">🔵</div>
+          <div class="med-info">
+            <div class="med-name">Lisinopril</div>
+            <div class="med-sub">10mg · Once daily · Hypertension</div>
+            <div class="med-times"><span class="time-pill done">9:00 PM ✓</span></div>
+          </div>
+          <div class="med-actions">
+            <div class="action-btn"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M7 2v10"/></svg></div>
+          </div>
+        </div>
+        <div class="med-item">
+          <div class="med-icon" style="background:#FAEEDA;font-size:20px">🟡</div>
+          <div class="med-info">
+            <div class="med-name">Atorvastatin</div>
+            <div class="med-sub">20mg · Once daily at night · Cholesterol</div>
+            <div class="med-times"><span class="time-pill done">7:00 AM ✓</span></div>
+          </div>
+          <div class="med-actions">
+            <div class="action-btn"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M7 2v10"/></svg></div>
+          </div>
+        </div>
+        <div class="med-item">
+          <div class="med-icon" style="background:#FCEBEB;font-size:20px">🔴</div>
+          <div class="med-info">
+            <div class="med-name">Pantoprazole</div>
+            <div class="med-sub">40mg · Before breakfast · Acid reflux</div>
+            <div class="med-times"><span class="time-pill done">7:30 AM ✓</span></div>
+          </div>
+          <div class="med-actions">
+            <div class="action-btn"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M7 2v10"/></svg></div>
+          </div>
+        </div>
+        <div class="med-item">
+          <div class="med-icon" style="background:#EEEDFE;font-size:20px">🟣</div>
+          <div class="med-info">
+            <div class="med-name">Aspirin</div>
+            <div class="med-sub">75mg · Once daily · Cardio prophylaxis</div>
+            <div class="med-times"><span class="time-pill">8:00 AM</span></div>
+          </div>
+          <div class="med-actions">
+            <div class="action-btn"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M7 2v10"/></svg></div>
+          </div>
+        </div>
+        <div class="med-item">
+          <div class="med-icon" style="background:#EAF3DE;font-size:20px">🟢</div>
+          <div class="med-info">
+            <div class="med-name">Vitamin D3</div>
+            <div class="med-sub">60000 IU · Weekly · Deficiency</div>
+            <div class="med-times"><span class="time-pill">Sunday 9:00 AM</span></div>
+          </div>
+          <div class="med-actions">
+            <div class="action-btn"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M7 2v10"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE PAGE -->
+    <div class="page" id="page-schedule">
+      <div class="section-head">
+        <div><div class="section-title">Schedule</div><div class="section-sub">April 11, 2026</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Morning</div>
+          <div class="schedule-row"><div class="sched-time">7:00</div><div class="sched-med"><div class="sched-name">Atorvastatin 20mg</div><div class="sched-dose">With water</div></div><div class="sched-status status-done">Done</div></div>
+          <div class="schedule-row"><div class="sched-time">7:30</div><div class="sched-med"><div class="sched-name">Pantoprazole 40mg</div><div class="sched-dose">Before breakfast</div></div><div class="sched-status status-done">Done</div></div>
+          <div class="schedule-row"><div class="sched-time">8:00</div><div class="sched-med"><div class="sched-name">Metformin 500mg</div><div class="sched-dose">With breakfast</div></div><div class="sched-status status-due">Overdue</div></div>
+          <div class="schedule-row"><div class="sched-time">8:00</div><div class="sched-med"><div class="sched-name">Aspirin 75mg</div><div class="sched-dose">After breakfast</div></div><div class="sched-status status-due">Overdue</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Afternoon & Evening</div>
+          <div class="schedule-row"><div class="sched-time">13:00</div><div class="sched-med"><div class="sched-name">Metformin 500mg</div><div class="sched-dose">With lunch</div></div><div class="sched-status status-upcoming">Later</div></div>
+          <div class="schedule-row"><div class="sched-time">21:00</div><div class="sched-med"><div class="sched-name">Lisinopril 10mg</div><div class="sched-dose">Before sleep</div></div><div class="sched-status status-upcoming">Later</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">History Log</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:var(--mint)"></div><div class="tl-line"></div></div>
+            <div class="tl-content"><div class="tl-time">7:03 AM today</div><div class="tl-text">Atorvastatin taken</div><div class="tl-med">On time</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:var(--mint)"></div><div class="tl-line"></div></div>
+            <div class="tl-content"><div class="tl-time">7:31 AM today</div><div class="tl-text">Pantoprazole taken</div><div class="tl-med">On time</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:var(--red)"></div><div class="tl-line"></div></div>
+            <div class="tl-content"><div class="tl-time">Yesterday 1:00 PM</div><div class="tl-text">Metformin missed</div><div class="tl-med">Lunch dose skipped</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:var(--mint)"></div><div class="tl-line"></div></div>
+            <div class="tl-content"><div class="tl-time">Yesterday 9:02 PM</div><div class="tl-text">Lisinopril taken</div><div class="tl-med">On time</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADHERENCE PAGE -->
+    <div class="page" id="page-adherence">
+      <div class="section-head">
+        <div><div class="section-title">Adherence Analytics</div><div class="section-sub">Last 30 days analysis</div></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Overall Rate</div><div class="stat-value" style="color:var(--mint)">87%</div><div class="stat-trend trend-up">Good range</div></div>
+        <div class="stat-card"><div class="stat-label">Consistency</div><div class="stat-value" style="color:var(--blue)">91%</div><div class="stat-trend">Timing score</div></div>
+        <div class="stat-card"><div class="stat-label">Risk Level</div><div class="stat-value" style="color:var(--amber)">Low</div><div class="stat-trend">3 misses/month</div></div>
+        <div class="stat-card"><div class="stat-label">Best Streak</div><div class="stat-value">12</div><div class="stat-trend">days in a row</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Per Medicine</div>
+          <div id="med-adherence"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Behavior Trend</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--tx2)">Morning doses</span><span style="font-weight:500">94%</span></div>
+              <div style="height:6px;background:var(--bg2);border-radius:3px"><div style="width:94%;height:100%;background:var(--mint);border-radius:3px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--tx2)">Afternoon doses</span><span style="font-weight:500">78%</span></div>
+              <div style="height:6px;background:var(--bg2);border-radius:3px"><div style="width:78%;height:100%;background:var(--amber);border-radius:3px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--tx2)">Evening doses</span><span style="font-weight:500">96%</span></div>
+              <div style="height:6px;background:var(--bg2);border-radius:3px"><div style="width:96%;height:100%;background:var(--mint);border-radius:3px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--tx2)">Weekday avg</span><span style="font-weight:500">91%</span></div>
+              <div style="height:6px;background:var(--bg2);border-radius:3px"><div style="width:91%;height:100%;background:var(--blue);border-radius:3px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--tx2)">Weekend avg</span><span style="font-weight:500">72%</span></div>
+              <div style="height:6px;background:var(--bg2);border-radius:3px"><div style="width:72%;height:100%;background:var(--red);border-radius:3px"></div></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:10px;background:var(--amber-light);border-radius:8px;font-size:12px;color:var(--amber-dark)">
+            Weekend adherence is 19% lower — consider setting louder reminders on Sat/Sun.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI ENGINE PAGE -->
+    <div class="page" id="page-ai">
+      <div class="section-head">
+        <div><div class="section-title">AI Decision Engine</div><div class="section-sub">Smart missed dose guidance</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Check Missed Dose</div>
+          <div class="field"><label>Select Medicine</label>
+            <select id="ai-med"><option>Metformin 500mg</option><option>Lisinopril 10mg</option><option>Atorvastatin 20mg</option><option>Aspirin 75mg</option></select>
+          </div>
+          <div class="field"><label>How long ago was it due?</label>
+            <select id="ai-time"><option value="15">15 minutes ago</option><option value="60">1 hour ago</option><option value="180">3 hours ago</option><option value="360">6+ hours ago</option></select>
+          </div>
+          <button class="btn primary" style="width:100%;margin-top:4px;justify-content:center" onclick="runAI()">Get AI Recommendation ↗</button>
+        </div>
+        <div class="card" id="ai-result-card">
+          <div class="card-title">Recommendation</div>
+          <div id="ai-result" style="font-size:13px;color:var(--tx2);text-align:center;padding:20px 0">Select a medicine and run analysis</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:0">
+        <div class="card-title">AI Insights — This Week</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--mint-light);border-radius:8px">
+            <div style="font-size:18px">🎯</div>
+            <div><div style="font-size:13px;font-weight:500;color:var(--mint-dark)">Great morning adherence</div><div style="font-size:12px;color:var(--mint-dark);opacity:0.8;margin-top:2px">You took 94% of morning doses on time. Keep it up!</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--amber-light);border-radius:8px">
+            <div style="font-size:18px">⚠️</div>
+            <div><div style="font-size:13px;font-weight:500;color:var(--amber-dark)">Afternoon pattern detected</div><div style="font-size:12px;color:var(--amber-dark);opacity:0.8;margin-top:2px">You miss your 1 PM Metformin 3 out of 7 days. Try setting a lunch alarm.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--blue-light);border-radius:8px">
+            <div style="font-size:18px">📊</div>
+            <div><div style="font-size:13px;font-weight:500;color:#0C447C">Predicted adherence next week: 89%</div><div style="font-size:12px;color:#185FA5;opacity:0.85;margin-top:2px">Based on your current behavior trend, slight improvement expected.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OCR PAGE -->
+    <div class="page" id="page-ocr">
+      <div class="section-head">
+        <div><div class="section-title">Prescription Scanner</div><div class="section-sub">Upload and extract medicine info automatically</div></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="upload-zone" onclick="simulateOCR()">
+          <span class="upload-icon">📷</span>
+          <div class="upload-title">Tap to scan prescription</div>
+          <div class="upload-sub">Supports JPG, PNG, PDF · Max 10MB</div>
+        </div>
+      </div>
+      <div class="card" id="ocr-result" style="display:none">
+        <div class="card-title">Extracted Medicines</div>
+        <div id="ocr-items"></div>
+        <button class="btn primary" style="margin-top:14px" onclick="addOCRMeds()">Add all to My Medicines</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+    <div class="modal">
+      <div class="modal-title">Add Medicine</div>
+      <div class="field"><label>Medicine Name</label><input type="text" placeholder="e.g. Metformin HCl" id="m-name"/></div>
+      <div class="field"><label>Dosage</label><input type="text" placeholder="e.g. 500mg" id="m-dose"/></div>
+      <div class="field"><label>Frequency</label>
+        <select id="m-freq"><option>Once daily</option><option>Twice daily</option><option>Thrice daily</option><option>Weekly</option></select>
+      </div>
+      <div class="field"><label>First Dose Time</label><input type="time" value="08:00" id="m-time"/></div>
+      <div class="field"><label>Condition / Purpose</label><input type="text" placeholder="e.g. Diabetes" id="m-condition"/></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn primary" onclick="saveMedicine()">Save Medicine</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+function openModal() { document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target.id==='modal') closeModal(); }
+
+function saveMedicine() {
+  const name = document.getElementById('m-name').value;
+  if(!name) return;
+  alert('Medicine "' + name + '" added successfully!');
+  closeModal();
+}
+
+function markTaken(med) {
+  const alert = document.querySelector('.reminder-alert');
+  alert.style.background = 'var(--mint-light)';
+  alert.style.borderColor = 'var(--mint)';
+  alert.querySelector('.alert-title').textContent = med + ' marked as taken';
+  alert.querySelector('.alert-title').style.color = 'var(--mint-dark)';
+  alert.querySelector('.alert-sub').textContent = 'Dose recorded at ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  alert.querySelector('.alert-sub').style.color = 'var(--mint-dark)';
+  alert.querySelector('.btn').style.display = 'none';
+}
+
+function aiDecision(choice) {
+  const msgs = {
+    take: '✅ Taking now is safe. Metformin works with food — take with next snack or small meal immediately.',
+    delay: '⏳ Delay until lunch (1 PM). Combine with your scheduled afternoon dose timing for better absorption.',
+    skip: '⏭ Skip this dose safely. Do NOT double up at lunch. Resume normal schedule at 1 PM.'
+  };
+  alert('AI Recommendation: ' + msgs[choice]);
+}
+
+function runAI() {
+  const med = document.getElementById('ai-med').value;
+  const mins = parseInt(document.getElementById('ai-time').value);
+  let rec, color, icon;
+  if(mins <= 30) { rec = 'Take now immediately. The delay is minimal and within safe window.'; color = 'var(--mint-light)'; icon = '✅'; }
+  else if(mins <= 120) { rec = 'Consider delaying to next meal. Avoid taking on empty stomach at this hour.'; color = 'var(--amber-light)'; icon = '⏳'; }
+  else { rec = 'Skip this dose safely. Do not double up. Resume your normal schedule.'; color = 'var(--red-light)'; icon = '⏭'; }
+  const r = document.getElementById('ai-result');
+  r.innerHTML = '<div style="background:' + color + ';border-radius:10px;padding:16px;text-align:left"><div style="font-size:22px;margin-bottom:8px">' + icon + '</div><div style="font-size:14px;font-weight:500;margin-bottom:6px">' + med + '</div><div style="font-size:13px;color:var(--tx1)">' + rec + '</div></div>';
+}
+
+function simulateOCR() {
+  const box = document.querySelector('.upload-zone');
+  box.innerHTML = '<span class="upload-icon" style="animation: pulse 1s infinite">🔍</span><div class="upload-title">Scanning prescription...</div><div class="upload-sub">Extracting medicine data</div>';
+  setTimeout(() => {
+    box.innerHTML = '<span class="upload-icon">✅</span><div class="upload-title">Scan complete!</div><div class="upload-sub">3 medicines detected</div>';
+    const result = document.getElementById('ocr-result');
+    result.style.display = 'block';
+    document.getElementById('ocr-items').innerHTML = `
+      <div class="med-item"><div class="med-icon" style="background:var(--mint-light);font-size:20px">💊</div><div class="med-info"><div class="med-name">Metoprolol Succinate</div><div class="med-sub">25mg · Once daily · Morning</div></div></div>
+      <div class="med-item"><div class="med-icon" style="background:var(--blue-light);font-size:20px">🔵</div><div class="med-info"><div class="med-name">Amlodipine</div><div class="med-sub">5mg · Once daily · Evening</div></div></div>
+      <div class="med-item"><div class="med-icon" style="background:var(--amber-light);font-size:20px">🟡</div><div class="med-info"><div class="med-name">Telmisartan</div><div class="med-sub">40mg · Once daily · Morning</div></div></div>`;
+  }, 1800);
+}
+
+function addOCRMeds() { alert('3 medicines added to your list!'); }
+
+const meds = [
+  {name:'Metformin', pct:78},
+  {name:'Lisinopril', pct:96},
+  {name:'Atorvastatin', pct:92},
+  {name:'Pantoprazole', pct:88},
+  {name:'Aspirin', pct:84},
+  {name:'Vitamin D3', pct:100}
+];
+const adEl = document.getElementById('med-adherence');
+if(adEl) {
+  adEl.innerHTML = meds.map(m => {
+    const c = m.pct >= 90 ? 'var(--mint)' : m.pct >= 75 ? 'var(--amber)' : 'var(--red)';
+    return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--tx2)">${m.name}</span><span style="font-weight:500">${m.pct}%</span></div><div style="height:5px;background:var(--bg2);border-radius:3px"><div style="width:${m.pct}%;height:100%;background:${c};border-radius:3px"></div></div></div>`;
+  }).join('');
+}
+</script>
