@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse, RedirectResponse
 from pathlib import Path
 
 from app.config import get_settings
@@ -15,8 +15,7 @@ from app.routers import medicines, doses, reminders, ai_router, adherence, presc
 
 # Path to static files
 DASHBOARD_HTML = Path(__file__).resolve().parent.parent / "medimind_ai_dashboard.html"
-SW_JS = Path(__file__).resolve().parent.parent / "sw.js"
-PILL_ICON = Path(__file__).resolve().parent.parent / "medimind_pill.png"
+PILL_ICON      = Path(__file__).resolve().parent.parent / "medimind_pill.png"
 
 # ─────────────────────────────────────────────────────────────────────────────
 logging.basicConfig(
